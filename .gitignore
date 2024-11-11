@@ -1,6 +1,7 @@
 # Binaries for programs and plugins
 main
 colona
+ColonA
 *.exe
 *.exe~
 *.so
