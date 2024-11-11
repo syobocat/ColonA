@@ -19,7 +19,7 @@ enum Command {
 struct State {
 	code []Command
 mut:
-	pointers []rune = [rune(0)]
+	memory []rune = [rune(0)]
 	pointer  usize
 }
 
@@ -33,10 +33,10 @@ fn main() {
 		code: parse(code)
 	}
 	//println('   input: ${state.code}')
-	print('  output: ')
+	print(' output: ')
 	exit_state := interpret(mut state)
-	println('pointers: ${exit_state.pointers}')
-	println(' pointer: ${exit_state.pointer}')
+	println(' memory: ${exit_state.memory}')
+	println('pointer: ${exit_state.pointer}')
 }
 
 fn interpret(mut state State) State {
@@ -51,35 +51,35 @@ fn interpret(mut state State) State {
 		match command {
 			.ptr_incl {
 				state.pointer += 1
-				if state.pointer == usize(state.pointers.len) {
-					state.pointers << rune(0)
+				if state.pointer == usize(state.memory.len) {
+					state.memory << rune(0)
 				}
 			}
 			.ptr_decl {
 				state.pointer -= 1
 			}
 			.incl {
-				state.pointers[state.pointer] += 1
+				state.memory[state.pointer] += 1
 			}
 			.decl {
-				state.pointers[state.pointer] -= 1
+				state.memory[state.pointer] -= 1
 			}
 			.out {
-				print(state.pointers[state.pointer])
+				print(state.memory[state.pointer])
 			}
 			.in {
 				mut r := readline.Readline{}
-				state.pointers[state.pointer] = rune(r.read_char() or { 0 })
+				state.memory[state.pointer] = rune(r.read_char() or { 0 })
 			}
 			.loop_start {
 				inner_code := state.code[i + 1..]
-				for state.pointers[state.pointer] != 0 {
+				for state.memory[state.pointer] != 0 {
 					mut inner_state := State {
 						...state
 						code: inner_code
 					}
 					new_state := interpret(mut inner_state)
-					state.pointers = new_state.pointers
+					state.memory = new_state.memory
 					state.pointer = new_state.pointer
 				}
 				skipping = true
